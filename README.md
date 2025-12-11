@@ -1,3 +1,3 @@
-# Pong_Game
-Pong game projekt OOP
+# Super Mario
+Super Mario projekt OOP
 
