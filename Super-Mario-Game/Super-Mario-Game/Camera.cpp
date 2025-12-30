@@ -10,7 +10,7 @@ sf::View Camera::GetView(sf::Vector2u windowSize) {
 		size = sf::Vector2f(zoomLvl, zoomLvl / aspect);
 	}else size = sf::Vector2f(zoomLvl * aspect, zoomLvl);
 
-	return sf::View(sf::Vector2f(0, 0), size);
+	return sf::View(position, size);
 
 
 }

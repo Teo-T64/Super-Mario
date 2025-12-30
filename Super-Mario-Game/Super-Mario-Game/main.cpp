@@ -8,10 +8,9 @@
 int main() {
 	sf::RenderWindow window(sf::VideoMode({ 1200,900 }), "Super Mario");
 	sf::Clock deltaClock;
-	Camera camera;
 	Renderer renderer(window);
 
-
+	window.setFramerateLimit(60);
 	Begin(window);
 
 	while (window.isOpen()) {
@@ -29,7 +28,7 @@ int main() {
 
 		window.clear();
 
-		render(renderer);
+		Render(renderer);
 
 		window.display();
 	}

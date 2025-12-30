@@ -2,8 +2,14 @@
 #include "Resources.h"
 #include <filesystem>
 #include <iostream>
+#include "Map.h"
+#include "Mario.h"
+#include "Physics.h"
 
-sf::Texture texture;
+Map map(16.0f);
+Camera camera(320.0f);
+Mario mario;
+
 
 void Begin(const sf::Window& window) {
     std::filesystem::path resourcePath = "../resources/";
@@ -26,13 +32,25 @@ void Begin(const sf::Window& window) {
     else {
         std::cout << std::filesystem::absolute(resourcePath) << std::endl;
     }
+
+    Physics::Init();
+
+    sf::Image image;
+    image.loadFromFile("../resources/map.png");
+    mario.position = map.CreateFromImg(image);
+    mario.Begin();
+
 }
 
 void update(float dTime) {
+    Physics::Update(dTime);
+    mario.Update(dTime);
+    camera.position = mario.position;
+
 
 }
 
-void render(Renderer& renderer) {
-	renderer.Draw(Resources::textures["block.png"], sf::Vector2f(), sf::Vector2f(2, 2));
-
+void Render(Renderer& renderer) {
+    map.Draw(renderer);
+    mario.Draw(renderer);
 }
