@@ -6,8 +6,8 @@
 #include "Mario.h"
 #include "Physics.h"
 
-Map map(16.0f);
-Camera camera(320.0f);
+Map map(1.0f);
+Camera camera(20.0f);
 Mario mario;
 
 
@@ -53,4 +53,5 @@ void update(float dTime) {
 void Render(Renderer& renderer) {
     map.Draw(renderer);
     mario.Draw(renderer);
+    Physics::DebugDraw(renderer);
 }

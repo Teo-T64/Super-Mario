@@ -1,9 +1,13 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <box2d/box2d.h>
 #include "Renderer.h"
 
 class Mario{
+private:
+	b2BodyId body;
+
 public:
 
 	void Begin();

@@ -2,7 +2,7 @@
 
 Renderer::Renderer(sf::RenderTarget& target):target(target) {}
 
-void Renderer::Draw(const sf::Texture& texture, const sf::Vector2f& pos, const sf::Vector2f& size) {
+void Renderer::Draw(const sf::Texture& texture, const sf::Vector2f& pos, const sf::Vector2f& size,float angle) {
     if (!sprite) {
         sprite.emplace(texture);
     }
@@ -12,8 +12,8 @@ void Renderer::Draw(const sf::Texture& texture, const sf::Vector2f& pos, const s
     sprite->setOrigin(texSize / 2.0f);
     sprite->setTexture(texture,true);
     sprite->setPosition(pos);
+    sprite->setRotation(sf::degrees(angle));
 
     sprite->setScale({ size.x / texSize.x, size.y / texSize.y });
-
     target.draw(*sprite);
 }

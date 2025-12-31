@@ -5,11 +5,12 @@
 class Renderer {
 private:
 	std::optional<sf::Sprite> sprite;
-	sf::RenderTarget& target;
 public:
+	sf::RenderTarget& target;
+
 	Renderer(sf::RenderTarget& target);
 
-	void Draw(const sf::Texture& texture,const sf::Vector2f& pos,const sf::Vector2f& size);
+	void Draw(const sf::Texture& texture,const sf::Vector2f& pos,const sf::Vector2f& size,float angle = 0.0f);
 
 
 };
