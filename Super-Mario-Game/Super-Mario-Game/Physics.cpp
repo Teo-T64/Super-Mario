@@ -73,10 +73,10 @@ public:
     static void DrawTransform(b2Transform transform, void* context) {
         float axisScale = 0.5f;
         b2Vec2 rx = b2RotateVector(transform.q, { axisScale, 0.0f });
-        DrawSegment(transform.p, { transform.p.x + rx.x, transform.p.y + rx.y }, (b2HexColor)0xFF0000, context); 
+        DrawSegment(transform.p, { transform.p.x + rx.x, transform.p.y + rx.y }, static_cast<b2HexColor>(0xFF0000), context); 
 
         b2Vec2 ry = b2RotateVector(transform.q, { 0.0f, axisScale });
-        DrawSegment(transform.p, { transform.p.x + ry.x, transform.p.y + ry.y }, (b2HexColor)0x00FF00, context); 
+        DrawSegment(transform.p, { transform.p.x + ry.x, transform.p.y + ry.y }, static_cast<b2HexColor>(0x00FF00), context); 
     }
 };
 
