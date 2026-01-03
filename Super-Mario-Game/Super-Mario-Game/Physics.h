@@ -5,8 +5,8 @@
 class MyDebugDraw;
 struct ContactListener
 {
-    virtual void OnBeginContact(b2ShapeId other) {}
-    virtual void OnEndContact(b2ShapeId other) {}
+    virtual void OnBeginContact() = 0;
+    virtual void OnEndContact() = 0;
     virtual ~ContactListener() = default;
 };
 

@@ -16,6 +16,7 @@ void Mario::Begin() {
     shapeDef.density = 1.0f;
     shapeDef.material.friction = 0.3f;
     shapeDef.userData = this;
+    shapeDef.enableContactEvents = true;
     b2CreatePolygonShape(body, &shapeDef, &box);
     b2Circle foot;
     foot.radius = 0.2f;
@@ -25,6 +26,7 @@ void Mario::Begin() {
     sensorDef.userData = this;
     footSensorId = b2CreateCircleShape(body, &sensorDef, &foot);
 }
+
 void Mario::Update(float dTime) {
 
     float move = movementSpeed;
@@ -72,3 +74,14 @@ void Mario::Draw(Renderer& renderer) {
         sf::Vector2f(1.0f, 2.0f), angle);
 }
 
+
+void Mario::OnBeginContact() {
+    groundContact = true;
+
+}
+
+
+void Mario::OnEndContact() {
+    groundContact = false;
+
+}

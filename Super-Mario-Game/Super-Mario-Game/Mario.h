@@ -12,12 +12,11 @@ private:
 	b2ShapeId footSensorId;
 	int groundContact = 0;
 public:
-
 	void Begin();
 	void Update(float dTime);
 	void Draw(Renderer& renderer);
-	void OnBeginContact(b2ShapeId otherShape)override;
-	void OnEndContact(b2ShapeId otherShape) override;
+	virtual void OnBeginContact()override;
+	virtual void OnEndContact() override;
 	bool IsGrounded()const { return groundContact > 0; }
 	sf::Vector2f position{};
 	float angle{};
