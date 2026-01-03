@@ -1,4 +1,5 @@
 #include "Physics.h"
+#include<SFML/Graphics.hpp>
 
 b2WorldId Physics::world = b2_nullWorldId;
 MyDebugDraw* Physics::debugDraw{};
@@ -80,19 +81,43 @@ public:
     }
 };
 
+
 void Physics::Init() {
     b2WorldDef worldDef = b2DefaultWorldDef();
 
     worldDef.gravity = { 0.0f, 9.2f };
 
     world = b2CreateWorld(&worldDef);
+    
+    
 }
-
 
 void Physics::Update(float dTime) {
 
     int subStepCount = 4;
     b2World_Step(world, dTime, subStepCount);
+    b2ContactEvents contactEvents = b2World_GetContactEvents(world);
+
+    for (int i = 0; i < contactEvents.beginCount; ++i)
+    {
+        const b2ContactBeginTouchEvent& e = contactEvents.beginEvents[i];
+        auto* A = (ContactListener*)b2Shape_GetUserData(e.shapeIdA);
+        auto* B = (ContactListener*)b2Shape_GetUserData(e.shapeIdB);
+
+        if (A) A->OnBeginContact(e.shapeIdB);
+        if (B) B->OnBeginContact(e.shapeIdA);
+    }
+
+    for (int i = 0; i < contactEvents.endCount; ++i)
+    {
+        const b2ContactEndTouchEvent& e = contactEvents.endEvents[i];
+
+        auto* A = (ContactListener*)b2Shape_GetUserData(e.shapeIdA);
+        auto* B = (ContactListener*)b2Shape_GetUserData(e.shapeIdB);
+
+        if (A) A->OnEndContact(e.shapeIdB);
+        if (B) B->OnEndContact(e.shapeIdA);
+    }
 }
 
 void Physics::DebugDraw(Renderer& renderer) {
