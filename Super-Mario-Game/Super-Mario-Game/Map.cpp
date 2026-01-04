@@ -1,6 +1,7 @@
 #include "Map.h"
 #include "Resources.h"
 #include "Physics.h"
+#include"Coin.h"
 #include <box2d/box2d.h>
 Map::Map(float cellSize) : cellSize(cellSize),grid() {}
 
@@ -23,7 +24,7 @@ Map::Map(float cellSize) : cellSize(cellSize),grid() {}
 
 }*/
 
-sf::Vector2f Map::CreateFromImg(const sf::Image& img) {
+sf::Vector2f Map::CreateFromImg(const sf::Image& img, std::vector<Object*>& objects) {
     grid.clear();
 
     auto width = img.getSize().x;
@@ -50,6 +51,14 @@ sf::Vector2f Map::CreateFromImg(const sf::Image& img) {
             else if (color == sf::Color::Red) {
                 marioPos = sf::Vector2f(cellSize * x + cellSize / 2.0f, cellSize * y + cellSize / 2.0f);
             }
+			else if (color == sf::Color::Yellow)
+			{
+				Coin* coin = new Coin();
+				coin->position = sf::Vector2f(cellSize * x + cellSize / 2.0f,
+					cellSize * y + cellSize / 2.0f);
+				objects.push_back(coin);
+
+			}
         }
     }
     return marioPos;

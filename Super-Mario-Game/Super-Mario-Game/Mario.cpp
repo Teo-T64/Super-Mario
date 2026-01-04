@@ -3,9 +3,18 @@
 
 
 constexpr float M_PI =22.0f/7.0f;
-const float movementSpeed = 7.0f;
-const float jumpVelocity = 10.0f;
-void Mario::Begin() {
+const float movementSpeed = 5.0f;
+const float jumpVelocity = 8.0f;
+void Mario::Begin() 
+{
+    runAnimation = Animation(0.6f,
+        {
+            AnimFrame{0.40f, Resources::textures["run3.png"]},
+            AnimFrame{0.20f, Resources::textures["run2.png"]},
+            AnimFrame{0.0f, Resources::textures["run1.png"]},
+        });
+   //jumpSound.setBuffer(Resources::sounds["jump.wav"]);
+   // jumpSound.setVolume(20);
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.type = b2_dynamicBody;
     bodyDef.position = { position.x, position.y };
@@ -30,8 +39,10 @@ void Mario::Begin() {
 void Mario::Update(float dTime) {
 
     float move = movementSpeed;
+    
     b2Vec2 velocity = b2Body_GetLinearVelocity(body);
-
+    runAnimation.Update(dTime);
+       
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift))
         move *= 2.0f;
 
@@ -39,23 +50,30 @@ void Mario::Update(float dTime) {
         velocity.x = move;
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
         velocity.x = -move;
-    else
-        velocity.x = 0.0f;
+;
 
     
     static bool jumpPressedLastFrame = false;
     bool jumpPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
 
-    if (jumpPressed && !jumpPressedLastFrame && IsGrounded())
-    {
-        velocity.y = -8.0f;
-    }
+    
     if (jumpPressed && !jumpPressedLastFrame && IsGrounded()) {
         velocity.y = -jumpVelocity;  
+     //   jumpSound.play();
     }
 
     jumpPressedLastFrame = jumpPressed;
+    textureToDraw = runAnimation.GetTexture();
+    if (velocity.x < 0.0f)
+        facingLeft = true;
+    else if (velocity.x > 0.0f)
+        facingLeft = false;
+    else
+        textureToDraw = Resources::textures["idle.png"];
+
+    if (!IsGrounded())
+       textureToDraw = Resources::textures["jump.png"];
 
     b2Body_SetLinearVelocity(body, velocity);
     b2Vec2 b2Pos = b2Body_GetPosition(body);
@@ -69,19 +87,21 @@ void Mario::Update(float dTime) {
 }
 
 void Mario::Draw(Renderer& renderer) {
-
-    renderer.Draw(Resources::textures["mario.png"], position,
-        sf::Vector2f(1.0f, 2.0f), angle);
+    renderer.Draw(textureToDraw, position,
+        sf::Vector2f(facingLeft ? -1.0f : 1.0f, 2.0f),
+        angle
+    );
 }
 
 
 void Mario::OnBeginContact() {
-    groundContact = true;
+    groundContact ++;
 
 }
 
 
 void Mario::OnEndContact() {
-    groundContact = false;
+    if(groundContact>0)
+        groundContact--;
 
 }
