@@ -31,7 +31,7 @@ sf::Vector2f Map::CreateFromImg(const sf::Image& img, std::vector<Object*>& obje
     auto height = img.getSize().y;
     sf::Vector2f marioPos{};
 
-    grid = std::vector(width, std::vector<int>(height, 0));
+    grid = std::vector<std::vector<int>>(width, std::vector<int>(height, 0));
 
     for (unsigned int x = 0; x < width; x++) {
         for (unsigned int y = 0; y < height; y++) {
@@ -41,24 +41,37 @@ sf::Vector2f Map::CreateFromImg(const sf::Image& img, std::vector<Object*>& obje
                 grid[x][y] = 1;
 
                 b2BodyDef bodyDef = b2DefaultBodyDef();
+                bodyDef.type = b2_staticBody; 
                 bodyDef.position = { cellSize * x + cellSize / 2.0f, cellSize * y + cellSize / 2.0f };
-                b2BodyId bodyId = b2CreateBody(Physics::world, &bodyDef);
-                b2Polygon box = b2MakeBox(cellSize / 2.0f, cellSize / 2.0f);
-                b2ShapeDef shapeDef = b2DefaultShapeDef();
-                b2CreatePolygonShape(bodyId, &shapeDef, &box);
 
+                b2BodyId bodyId = b2CreateBody(Physics::world, &bodyDef);
+
+                b2Polygon box = b2MakeBox(cellSize / 2.0f, cellSize / 2.0f);
+
+                b2ShapeDef shapeDef = b2DefaultShapeDef();
+
+                FixtureData* fixtureData = new FixtureData();
+                fixtureData->type = FixtureDataType::MapTile;
+                fixtureData->mapX = x;
+                fixtureData->mapY = y;
+                fixtureData->listener = nullptr;
+
+                shapeDef.userData = fixtureData;
+                shapeDef.enableContactEvents = true;
+                shapeDef.density = 0.0f; 
+
+                b2CreatePolygonShape(bodyId, &shapeDef, &box);
             }
             else if (color == sf::Color::Red) {
                 marioPos = sf::Vector2f(cellSize * x + cellSize / 2.0f, cellSize * y + cellSize / 2.0f);
             }
-			else if (color == sf::Color::Yellow)
-			{
-				Coin* coin = new Coin();
-				coin->position = sf::Vector2f(cellSize * x + cellSize / 2.0f,
-					cellSize * y + cellSize / 2.0f);
-				objects.push_back(coin);
+            else if (color == sf::Color::Yellow) {
 
-			}
+                sf::Vector2f pos(cellSize * x + cellSize / 2.0f, cellSize * y + cellSize / 2.0f);
+                Coin* coin = new Coin(pos); 
+                objects.push_back(coin);
+
+            }
         }
     }
     return marioPos;

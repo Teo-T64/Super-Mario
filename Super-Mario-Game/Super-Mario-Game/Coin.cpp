@@ -1,6 +1,47 @@
 #include "Coin.h"
 #include "Resources.h"
+#include "Physics.h"
+#include <iostream>
 
+Coin::~Coin() {
+
+    int shapeCount = b2Body_GetShapeCount(this->body);
+    if (shapeCount > 0) {
+        b2ShapeId shapes[1];
+        b2Body_GetShapes(this->body, shapes, 1);
+
+        FixtureData* data = static_cast<FixtureData*>(b2Shape_GetUserData(shapes[0]));
+        delete data;
+    }
+
+    if (b2Body_IsValid(this->body)) {
+        b2DestroyBody(this->body);
+        this->body = b2_nullBodyId;
+    }
+}
+
+Coin::Coin(sf::Vector2f pos) {
+    this->position = pos;
+    this->tag = "coin";
+
+    b2BodyDef bodyDef = b2DefaultBodyDef();
+    bodyDef.type = b2_staticBody;
+    bodyDef.position = { pos.x, pos.y };
+
+    this->body = b2CreateBody(Physics::world, &bodyDef);
+
+    b2Polygon box = b2MakeBox(0.5f, 0.5f);
+    b2ShapeDef shapeDef = b2DefaultShapeDef();
+    shapeDef.isSensor = true;
+    shapeDef.enableSensorEvents = true;
+
+    FixtureData* fixtureData = new FixtureData();
+    fixtureData->type = FixtureDataType::Object;
+    fixtureData->object = this;
+    fixtureData->listener = nullptr;
+    shapeDef.userData = fixtureData;
+    b2CreatePolygonShape(this->body, &shapeDef, &box);
+}
 void Coin::Begin()
 {
     animation = Animation(1.4f,
@@ -20,10 +61,12 @@ void Coin::Begin()
             AnimFrame(0.1f, Resources::textures["coin2.png"]),
             AnimFrame(0.0f, Resources::textures["coin1.png"]),
         });
+
 }
 
 void Coin::Update(float dTime)
 {
+
     animation.Update(dTime);
 }
 

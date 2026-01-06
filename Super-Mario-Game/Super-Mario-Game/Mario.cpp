@@ -1,5 +1,8 @@
 #include "Mario.h"
+#include "object.h"
 #include "Resources.h"
+#include "Game.h"
+#include <iostream>
 
 
 constexpr float M_PI =22.0f/7.0f;
@@ -15,24 +18,31 @@ void Mario::Begin()
         });
    //jumpSound.setBuffer(Resources::sounds["jump.wav"]);
    // jumpSound.setVolume(20);
+    fixtureData.listener = this;
+    fixtureData.mario = this;
+    fixtureData.type = FixtureDataType::Mario;
+
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.type = b2_dynamicBody;
     bodyDef.position = { position.x, position.y };
     bodyDef.fixedRotation = true;
     body = b2CreateBody(Physics::world, &bodyDef);
-    b2Polygon box = b2MakeBox(0.5f, 1.0f);
+
+    b2Polygon box = b2MakeBox(0.40f, 0.85f);
     b2ShapeDef shapeDef = b2DefaultShapeDef();
-    shapeDef.density = 1.0f;
-    shapeDef.material.friction = 0.3f;
-    shapeDef.userData = this;
+    shapeDef.userData = &fixtureData;
     shapeDef.enableContactEvents = true;
     b2CreatePolygonShape(body, &shapeDef, &box);
     b2Circle foot;
-    foot.radius = 0.2f;
-    foot.center = { 0.0f, -0.9f };
+    foot.radius = 0.25f;
+
+    foot.center = { 0.0f, 0.90f };
+
     b2ShapeDef sensorDef = b2DefaultShapeDef();
     sensorDef.isSensor = true;
-    sensorDef.userData = this;
+    sensorDef.userData = &fixtureData;
+    sensorDef.enableSensorEvents = true;
+
     footSensorId = b2CreateCircleShape(body, &sensorDef, &foot);
 }
 
@@ -74,12 +84,11 @@ void Mario::Update(float dTime) {
 
     if (!IsGrounded())
        textureToDraw = Resources::textures["jump.png"];
-
+    //std::cout << "Grounded: " << groundContact << " | IsGrounded(): " << (IsGrounded() ? "YES" : "NO") << std::endl;
     b2Body_SetLinearVelocity(body, velocity);
     b2Vec2 b2Pos = b2Body_GetPosition(body);
     position = sf::Vector2f(b2Pos.x, b2Pos.y);
-
-
+    
     b2Rot rotation = b2Body_GetRotation(body);
     float radians = b2Rot_GetAngle(rotation);
     angle = radians * 180.0f / M_PI;
@@ -93,15 +102,34 @@ void Mario::Draw(Renderer& renderer) {
     );
 }
 
+void Mario::OnBeginContact(b2ShapeId self, b2ShapeId other) {
+    void* userPtr = b2Shape_GetUserData(other);
+    if (!userPtr) return;
 
-void Mario::OnBeginContact() {
-    groundContact ++;
+    FixtureData* data = static_cast<FixtureData*>(userPtr);
 
+    if (data->type == FixtureDataType::Object) {
+        if (data->object->tag == "coin" && !data->object->toDestroy) {
+            data->object->toDestroy = true; 
+            this->coins++;                
+            std::cout << "Collected Coin! Total: " << this->coins << std::endl;
+        }
+    }
+
+    if (data->type == FixtureDataType::MapTile) {
+        groundContact++;
+    }
 }
+void Mario::OnEndContact(b2ShapeId self, b2ShapeId other) {
+    FixtureData* data = static_cast<FixtureData*>(b2Shape_GetUserData(other));
 
+    if (!data) return;
 
-void Mario::OnEndContact() {
-    if(groundContact>0)
-        groundContact--;
+    if (data && data->type == FixtureDataType::MapTile) {
+        if (self.index1 == footSensorId.index1 || self.index1 == body.index1) {
+            groundContact--;
+            if (groundContact < 0) groundContact = 0;
+        }
+    }
 
 }

@@ -16,46 +16,52 @@ std::vector<Object*> objects{};
 sf::Music music{};
 
 void Begin(const sf::Window& window) {
-    std::filesystem::path resourcePath = "../resources/";
 
-    if (std::filesystem::exists(resourcePath)) {
-        for (const auto& entry : std::filesystem::directory_iterator(resourcePath)) {
-            if (entry.is_regular_file()) {
-                std::string ext = entry.path().extension().string();
-                if (ext == ".png" || ext == ".jpg"|| ext==".gif") {
+    std::filesystem::path resourcePath = "resources/";
 
-                    std::string key = entry.path().filename().string();
+    int depthLimit = 3;
+    while (!std::filesystem::exists(resourcePath) && depthLimit > 0) {
+        resourcePath = ".." / resourcePath;
+        depthLimit--;
+    }
 
-                    if (Resources::textures[key].loadFromFile(entry.path().string())) {
-                        std::cout << "LOADED: " << key << " from " << entry.path() << std::endl;
-                    }
+
+    if (!std::filesystem::exists(resourcePath)) {
+        std::cout << "FATAL ERROR: Could not find resources folder. Searched up to: "
+            << std::filesystem::absolute(resourcePath) << std::endl;
+        return;
+    }
+
+
+    for (const auto& entry : std::filesystem::directory_iterator(resourcePath)) {
+        if (entry.is_regular_file()) {
+            std::string ext = entry.path().extension().string();
+            if (ext == ".png" || ext == ".jpg" || ext == ".gif") {
+                std::string key = entry.path().filename().string();
+                if (Resources::textures[key].loadFromFile(entry.path().string())) {
+                    std::cout << "LOADED: " << key << std::endl;
                 }
             }
         }
     }
-    else {
-        std::cout << std::filesystem::absolute(resourcePath) << std::endl;
-    }
-    std::filesystem::path soundPath = "../resources/sounds/";
+
+    std::filesystem::path soundPath = resourcePath / "sounds/";
     if (std::filesystem::exists(soundPath)) {
         for (const auto& entry : std::filesystem::directory_iterator(soundPath)) {
             if (entry.is_regular_file()) {
                 std::string ext = entry.path().extension().string();
-                if (ext == ".ogg" || ext == ".wav" ){
-
+                if (ext == ".ogg" || ext == ".wav") {
                     std::string key = entry.path().filename().string();
-
                     if (Resources::sounds[key].loadFromFile(entry.path().string())) {
-                        std::cout << "LOADED: " << key << " from " << entry.path() << std::endl;
+                        std::cout << "LOADED SOUND: " << key << std::endl;
                     }
                 }
             }
         }
     }
-    else {
-        std::cout << std::filesystem::absolute(soundPath) << std::endl;
-    }
-    music.openFromFile("../resources/sounds/music.ogg");
+
+
+    music.openFromFile((soundPath / "music.ogg").string());
     music.setLooping(true);
     music.setVolume(25);
     music.play();
@@ -63,13 +69,17 @@ void Begin(const sf::Window& window) {
     Physics::Init();
 
     sf::Image image;
-    image.loadFromFile("../resources/map.png");
-    mario.position = map.CreateFromImg(image,objects);
+    if (image.loadFromFile((resourcePath / "map.png").string())) {
+        mario.position = map.CreateFromImg(image, objects);
+    }
+    else {
+        std::cout << "ERROR: Could not load map.png from " << resourcePath << std::endl;
+    }
+
     mario.Begin();
     for (auto& object : objects) {
         object->Begin();
     }
-
 }
 
 void update(float dTime) {
@@ -89,5 +99,6 @@ void Render(Renderer& renderer) {
     }
     map.Draw(renderer);
     mario.Draw(renderer);
-    //Physics::DebugDraw(renderer);
+    Physics::DebugDraw(renderer);
 }
+
