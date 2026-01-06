@@ -7,14 +7,14 @@
 #include "Physics.h"
 #include<SFML/Audio.hpp>
 
-#include<filesystem>
 Map map(1.0f);
 Camera camera(20.0f);
 Mario mario ;
 std::vector<Object*> objects{};
-
 sf::Music music{};
 
+sf::Font font{};
+sf::Text coinsTxt(font, "Score", 24);
 void Begin(const sf::Window& window) {
 
     std::filesystem::path resourcePath = "resources/";
@@ -66,6 +66,12 @@ void Begin(const sf::Window& window) {
     music.setVolume(25);
     music.play();
 
+    font.openFromFile((resourcePath/"font.ttf").string());
+    coinsTxt.setFillColor(sf::Color::White);
+    coinsTxt.setOutlineColor(sf::Color::Black);
+    coinsTxt.setOutlineThickness(1.0f);
+    coinsTxt.setScale(sf::Vector2f(0.1f,0.1f));
+
     Physics::Init();
 
     sf::Image image;
@@ -83,15 +89,28 @@ void Begin(const sf::Window& window) {
 }
 
 void update(float dTime) {
+    std::vector<Object*> toDeleteThisFrame;
+
+    for (int i = 0; i < objects.size(); i++) {
+        if (objects[i]->toDestroy) {
+            toDeleteThisFrame.push_back(objects[i]); 
+            objects.erase(objects.begin() + i);
+            i--;
+        }
+    }
+
     Physics::Update(dTime);
     mario.Update(dTime);
     camera.position = mario.position;
+
     for (auto& object : objects) {
         object->Update(dTime);
     }
 
+    for (Object* obj : toDeleteThisFrame) {
+        delete obj;
+    }
 }
-
 void Render(Renderer& renderer) {
     renderer.Draw(Resources::textures["sky.png"], camera.position, camera.GetViewSize());
     for (auto& object : objects) {
@@ -102,3 +121,8 @@ void Render(Renderer& renderer) {
     Physics::DebugDraw(renderer);
 }
 
+void RenderUI(Renderer& renderer) {
+    coinsTxt.setPosition(-camera.GetViewSize() / 2.0f + sf::Vector2f(2.0f, 1.0f));
+    coinsTxt.setString("Score: "+ std::to_string(mario.GetCoins()));
+    renderer.target.draw(coinsTxt);
+}

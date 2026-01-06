@@ -4,22 +4,18 @@
 #include <iostream>
 
 Coin::~Coin() {
-
-    int shapeCount = b2Body_GetShapeCount(this->body);
-    if (shapeCount > 0) {
-        b2ShapeId shapes[1];
-        b2Body_GetShapes(this->body, shapes, 1);
-
-        FixtureData* data = static_cast<FixtureData*>(b2Shape_GetUserData(shapes[0]));
-        delete data;
-    }
-
     if (b2Body_IsValid(this->body)) {
+        b2ShapeId shape;
+        int shapeCount = b2Body_GetShapes(this->body, &shape, 1);
+        if (shapeCount > 0) {
+            void* data = b2Shape_GetUserData(shape);
+            if (data) delete static_cast<FixtureData*>(data);
+        }
+
         b2DestroyBody(this->body);
         this->body = b2_nullBodyId;
     }
 }
-
 Coin::Coin(sf::Vector2f pos) {
     this->position = pos;
     this->tag = "coin";

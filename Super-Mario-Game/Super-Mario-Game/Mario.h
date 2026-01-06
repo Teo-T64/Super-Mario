@@ -17,7 +17,6 @@ private:
 	sf::Texture textureToDraw;
 	b2BodyId body;
 	b2ShapeId footSensorId;
-	//b2ShapeId mainShapeId;
 	size_t groundContact = 0;
 	bool facingLeft = false;
 	size_t coins{};
@@ -29,6 +28,7 @@ public:
 	void OnBeginContact(b2ShapeId self, b2ShapeId other)override;
 	void OnEndContact(b2ShapeId self, b2ShapeId other) override;
 	bool IsGrounded()const { return groundContact > 0; }
+	size_t GetCoins() const { return coins; };
 	sf::Vector2f position{};
 	float angle{};
 	

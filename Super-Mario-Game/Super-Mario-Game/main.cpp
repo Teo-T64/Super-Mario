@@ -22,13 +22,15 @@ int main() {
 			}
 
 		}
-		window.setView(camera.GetView(window.getSize()));
-
 		update(deltaTime);
 
 		window.clear();
+		window.setView(camera.GetView(window.getSize()));
 
 		Render(renderer);
+		window.setView(camera.GetUIView());
+		RenderUI(renderer);
+
 
 		window.display();
 	}

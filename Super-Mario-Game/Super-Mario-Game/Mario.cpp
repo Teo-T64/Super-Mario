@@ -3,7 +3,7 @@
 #include "Resources.h"
 #include "Game.h"
 #include <iostream>
-
+#include <box2d/box2d.h>
 
 constexpr float M_PI =22.0f/7.0f;
 const float movementSpeed = 5.0f;
@@ -34,9 +34,9 @@ void Mario::Begin()
     shapeDef.enableContactEvents = true;
     b2CreatePolygonShape(body, &shapeDef, &box);
     b2Circle foot;
-    foot.radius = 0.25f;
+    foot.radius = 0.2f;
 
-    foot.center = { 0.0f, 0.90f };
+    foot.center = { 0.0f, 0.86f };
 
     b2ShapeDef sensorDef = b2DefaultShapeDef();
     sensorDef.isSensor = true;
@@ -110,8 +110,13 @@ void Mario::OnBeginContact(b2ShapeId self, b2ShapeId other) {
 
     if (data->type == FixtureDataType::Object) {
         if (data->object->tag == "coin" && !data->object->toDestroy) {
-            data->object->toDestroy = true; 
-            this->coins++;                
+
+            data->object->toDestroy = true;
+
+
+            b2Filter filter = { 0 };
+            b2Shape_SetFilter(other, filter);
+            this->coins++;
             std::cout << "Collected Coin! Total: " << this->coins << std::endl;
         }
     }
