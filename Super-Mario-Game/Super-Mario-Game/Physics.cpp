@@ -87,7 +87,7 @@ public:
 
 class MyGlobalContactListener {
 public:
-    static void BeginContact(b2ShapeId shapeIdA, b2ShapeId shapeIdB, void* context) {
+    static void BeginContact(b2ShapeId shapeIdA, b2ShapeId shapeIdB) {
         FixtureData* dataA = (FixtureData*)b2Shape_GetUserData(shapeIdA);
         FixtureData* dataB = (FixtureData*)b2Shape_GetUserData(shapeIdB);
 
@@ -100,7 +100,7 @@ public:
         }
     }
 
-    static void EndContact(b2ShapeId shapeIdA, b2ShapeId shapeIdB, void* context) {
+    static void EndContact(b2ShapeId shapeIdA, b2ShapeId shapeIdB) {
         FixtureData* dataA = (FixtureData*)b2Shape_GetUserData(shapeIdA);
         FixtureData* dataB = (FixtureData*)b2Shape_GetUserData(shapeIdB);
 
@@ -132,66 +132,32 @@ void Physics::Update(float dTime) {
     accumulator += dTime;
 
     while (accumulator >= timeStep) {
-        int subStepCount = 4;
-
-        b2World_Step(world, timeStep, subStepCount);
+        b2World_Step(world, timeStep, 4);
 
         b2ContactEvents contactEvents = b2World_GetContactEvents(world);
-
         for (int i = 0; i < contactEvents.beginCount; ++i) {
-            b2ContactBeginTouchEvent* e = &contactEvents.beginEvents[i];
-
-            FixtureData* dataA = static_cast<FixtureData*>(b2Shape_GetUserData(e->shapeIdA));
-            FixtureData* dataB = static_cast<FixtureData*>(b2Shape_GetUserData(e->shapeIdB));
-
-            if (dataA && dataA->listener) dataA->listener->OnBeginContact(e->shapeIdA, e->shapeIdB);
-            if (dataB && dataB->listener) dataB->listener->OnBeginContact(e->shapeIdB, e->shapeIdA);
-
+            auto& e = contactEvents.beginEvents[i];
+            MyGlobalContactListener::BeginContact(e.shapeIdA, e.shapeIdB);
             printf("Solid Contact Detected!\n");
         }
-
         for (int i = 0; i < contactEvents.endCount; ++i) {
-            b2ContactEndTouchEvent* e = &contactEvents.endEvents[i];
-
-            FixtureData* dataA = static_cast<FixtureData*>(b2Shape_GetUserData(e->shapeIdA));
-            FixtureData* dataB = static_cast<FixtureData*>(b2Shape_GetUserData(e->shapeIdB));
-
-            if (dataA && dataA->listener) dataA->listener->OnEndContact(e->shapeIdA, e->shapeIdB);
-            if (dataB && dataB->listener) dataB->listener->OnEndContact(e->shapeIdB, e->shapeIdA);
+            auto& e = contactEvents.endEvents[i];
+            MyGlobalContactListener::EndContact(e.shapeIdA, e.shapeIdB);
         }
 
         b2SensorEvents sensorEvents = b2World_GetSensorEvents(world);
-
-      
         for (int i = 0; i < sensorEvents.beginCount; ++i) {
-            b2SensorBeginTouchEvent e = sensorEvents.beginEvents[i];
-
-            FixtureData* sensorData = static_cast<FixtureData*>(b2Shape_GetUserData(e.sensorShapeId));
-            FixtureData* visitorData = static_cast<FixtureData*>(b2Shape_GetUserData(e.visitorShapeId));
-
-            if (sensorData && sensorData->listener) {
-                sensorData->listener->OnBeginContact(e.sensorShapeId, e.visitorShapeId);
-            }
-            if (visitorData && visitorData->listener) {
-                visitorData->listener->OnBeginContact(e.visitorShapeId, e.sensorShapeId);
-            }
-
-            printf("Sensor overlap detected (Coin/Feet)!\n");
+            auto& e = sensorEvents.beginEvents[i];
+            MyGlobalContactListener::BeginContact(e.sensorShapeId, e.visitorShapeId);
+            printf("Sensor overlap detected!\n");
         }
-
         for (int i = 0; i < sensorEvents.endCount; ++i) {
-            b2SensorEndTouchEvent e = sensorEvents.endEvents[i];
-
-            FixtureData* sensorData = static_cast<FixtureData*>(b2Shape_GetUserData(e.sensorShapeId));
-            FixtureData* visitorData = static_cast<FixtureData*>(b2Shape_GetUserData(e.visitorShapeId));
-
-            if (sensorData && sensorData->listener) sensorData->listener->OnEndContact(e.sensorShapeId, e.visitorShapeId);
-            if (visitorData && visitorData->listener) visitorData->listener->OnEndContact(e.visitorShapeId, e.sensorShapeId);
+            auto& e = sensorEvents.endEvents[i];
+            MyGlobalContactListener::EndContact(e.sensorShapeId, e.visitorShapeId);
         }
 
         accumulator -= timeStep;
     }
-
 }
 void Physics::DebugDraw(Renderer& renderer) {
 
