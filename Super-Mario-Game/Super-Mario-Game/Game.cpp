@@ -162,28 +162,28 @@ void Begin(const sf::Window& window) {
 void update(float dTime) {
     std::vector<Object*> toDeleteThisFrame;
 
-    bool hasAllCoins = (mario.GetCoins() >= coinsInLvl && coinsInLvl > 0);
+    bool won = (mario.GetCoins() >= coinsInLvl && coinsInLvl > 0);
 
-    if (hasAllCoins && winTimer < 0) {
-        winTimer = 1.25f; 
+    if (won && winTimer < 0) {
+        winTimer = 1.25f;
     }
-
     if (winTimer > 0) {
         winTimer -= dTime;
         if (winTimer <= 0) {
-            paused = true; 
-            winTimer = 0;  
+            paused = true;
+            winTimer = 0;
         }
     }
 
     if (mario.isDead) {
+        paused = true;
+    }
+
+    if (paused && (mario.isDead || won)) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-            paused = false; 
+            paused = false;
             Restart();
-            return; 
-        }
-        else {
-            paused = true;
+            return;
         }
     }
 
