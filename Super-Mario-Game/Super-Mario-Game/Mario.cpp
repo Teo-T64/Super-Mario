@@ -8,6 +8,12 @@
 constexpr float M_PI =22.0f/7.0f;
 const float movementSpeed = 5.0f;
 const float jumpVelocity = 8.0f;
+
+Mario::~Mario() {
+    if (b2World_IsValid(Physics::world) && b2Body_IsValid(body)) {
+        b2DestroyBody(body);
+    }
+}
 void Mario::Begin() 
 {
     runAnimation = Animation(0.6f,
@@ -28,7 +34,7 @@ void Mario::Begin()
     bodyDef.fixedRotation = true;
     body = b2CreateBody(Physics::world, &bodyDef);
 
-    b2Polygon box = b2MakeBox(0.35f, 0.75f);
+    b2Polygon box = b2MakeBox(0.35f, 0.80f);
     b2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.userData = &fixtureData;
     shapeDef.enableContactEvents = true;

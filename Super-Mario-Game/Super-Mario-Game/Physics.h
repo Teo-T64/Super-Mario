@@ -31,7 +31,7 @@ public:
     static void Init();
     static void Update(float dTime);
     static void DebugDraw(Renderer& renderer);
-
+    static void Cleanup();
     static MyDebugDraw* debugDraw;
     static b2WorldId world;
 };

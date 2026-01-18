@@ -114,8 +114,15 @@ public:
     }
 };
 
+void Physics::Cleanup() {
+    if (b2World_IsValid(world)) {
+        b2DestroyWorld(world);
+        world = b2_nullWorldId;
+    }
+}
 
 void Physics::Init() {
+
     b2WorldDef worldDef = b2DefaultWorldDef();
 
     worldDef.gravity = { 0.0f, 9.2f };

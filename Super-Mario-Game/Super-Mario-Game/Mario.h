@@ -22,7 +22,7 @@ private:
 	size_t coins{};
 
 public:
-	
+	~Mario();
 	void Begin();
 	void Update(float dTime);
 	void Draw(Renderer& renderer);

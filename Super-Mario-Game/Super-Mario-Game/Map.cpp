@@ -61,6 +61,7 @@ sf::Vector2f Map::CreateFromImg(const sf::Image& img, std::vector<Object*>& obje
                 shapeDef.userData = fixtureData;
                 shapeDef.enableContactEvents = true;
                 shapeDef.density = 0.0f; 
+                shapeDef.material.friction = 0.0f;
 
                 b2CreatePolygonShape(bodyId, &shapeDef, &box);
             }
@@ -79,7 +80,7 @@ sf::Vector2f Map::CreateFromImg(const sf::Image& img, std::vector<Object*>& obje
                     cellSize * y + cellSize / 2.0f);
 
                 Enemy* enemy = new Enemy(enemyPos);
-                enemy->position = enemyPos;  // POSTAVI POZICIJU
+                enemy->position = enemyPos; 
                 objects.push_back(enemy);
 
                 std::cout << "Created enemy at: (" << enemyPos.x << ", " << enemyPos.y << ")" << std::endl;
