@@ -20,18 +20,18 @@ cd vcpkg
 - Esc - pauziranje igrice
 - Space - resetiranje igrice nakon smrti ili pobjede
 **Ovisnosti u projektu**
-SFML 3.0
+**SFML 3.0**
 - Graphics: Za iscrtavanje mapa, likova i UI-ja
 - Audio: Za pozadinsku glazbu.
 - Window: Za obradu događaja tipkovnice i upravljanje prozorom
-Box2d 3.0
+**Box2d 3.0**
 - Zaslužan za upravljanje gravitacijom, detekciju sudara između igrača i objekata, kretanje te za kreiranje statičkih i dinamičkih tijela
-C++ STL
+**C++ STL**
 -<filesystem>- za traženje mape resources/ i automatsko učitavanje datoteka
 -<vector>: Za spremanje popisa objekata 
 -<iostream>: Za ispisivanje debug informacija u konzolu 
 -<string>: Za upravljanje tekstom i putanjama
-Mapa `resources/`
+**Mapa `resources/`**
 - Smješteni su .png datoteke za animacije likova, neprijatelja i novčića, mape, backgrounda , .ttf za font i .wav, .ogg datoteke za zvukove
 **Rješavanje mogućih problema**
 -Ako igra javi "FATAL ERROR:Could not find resources folder.",
