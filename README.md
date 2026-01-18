@@ -3,7 +3,8 @@ Super Mario projekt OOP
 
 **Pokretanje projekta**
 - Downloadati kao .zip ili koristiti naredbu `git clone https://github.com/Teo-T64/Super-Mario.git`
-- Preduvjeti za pokretanje: SFML 3.0(dostupan u projektu), box2d za VS koristeći vcpkg.
+- Preduvjeti za pokretanje: C++ 17 ili više, SFML 3.0(dostupan u projektu), box2d za VS koristeći vcpkg.
+
 **Instaliranje box2d**
 - Otvoriti cmd/Powershell i unijeti naredbe:
 `git clone https://github.com/microsoft/vcpkg.git
@@ -11,6 +12,7 @@ cd vcpkg
 .\bootstrap-vcpkg.bat`
 - zatim nakon instaliranja vxproj unijeti naredbu za instalaciju box2d `.\vcpkg install box2d:x64-windows`, te integrirati sa VS `.\vcpkg integrate install`
 - Kako bi se projekt mogao funkcionirati potrebno je u VS imati Solution Configuration na Debug i Solution platforms na x64
+  
 **Kontrole u igri**
 - Strelica desno - kretanje desno
 - Strelica lijevo - kretanje lijevo
