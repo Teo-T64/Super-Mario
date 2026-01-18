@@ -5,6 +5,12 @@
 
 constexpr float M_PI = 3.14159265359f;
 
+
+Enemy::~Enemy() {
+    if (b2World_IsValid(Physics::world) && b2Body_IsValid(body)) {
+        b2DestroyBody(body);
+    }
+}
 Enemy::Enemy(const sf::Vector2f& pos) {
     position = pos;
     body = b2_nullBodyId;  
@@ -54,45 +60,33 @@ void Enemy::Update(float deltaTime) {
     if (isDead) {
         destroyTimer += deltaTime;
 
-        if (destroyTimer >= 0.05f) {
-            if (b2Body_IsValid(body)) {
-                b2DestroyBody(body);
-                body = b2_nullBodyId;
-            }
+        if (destroyTimer >= 0.2f) {
+            this->toDestroy = true; 
         }
         return;
     }
-    this->tag = "enemy";
-  
+
     animation.Update(deltaTime);
 
-    
-    if (b2Body_IsValid(body) == false) return;
-
+    if (!b2Body_IsValid(body)) return;
 
     b2Vec2 velocity = b2Body_GetLinearVelocity(body);
 
-    
     if (std::abs(velocity.x) <= 0.1f) {
         movement *= -1.0f;
     }
 
-    
     velocity.x = movement;
-    velocity.y = 0.0f; 
+    velocity.y = b2Body_GetLinearVelocity(body).y; 
 
     b2Body_SetLinearVelocity(body, velocity);
 
-    
     b2Vec2 b2Pos = b2Body_GetPosition(body);
     position = sf::Vector2f(b2Pos.x, b2Pos.y);
 
-   
     b2Rot rotation = b2Body_GetRotation(body);
-    float radians = b2Rot_GetAngle(rotation);
-    angle = radians * 180.0f / M_PI;
+    angle = b2Rot_GetAngle(rotation) * 180.0f / M_PI;
 }
-
 void Enemy::Render(Renderer& renderer) {
     if (isDead) {
         sf::Vector2f scale(1.0f, 0.1f);
@@ -104,10 +98,16 @@ void Enemy::Render(Renderer& renderer) {
     }
 }
 
-void Enemy::Die(){
+void Enemy::Die() {
+    if (isDead) return;
 
-        isDead = true;
-        
+    isDead = true;
+    destroyTimer = 0.0f;
+
+    if (b2Body_IsValid(body)) {
+        b2Body_SetLinearVelocity(body, { 0.0f, 0.0f });
+        b2Body_Disable(body);
+    }
 }
 bool Enemy::IsDead()const
 {

@@ -28,15 +28,15 @@ void Mario::Begin()
     bodyDef.fixedRotation = true;
     body = b2CreateBody(Physics::world, &bodyDef);
 
-    b2Polygon box = b2MakeBox(0.40f, 0.85f);
+    b2Polygon box = b2MakeBox(0.35f, 0.75f);
     b2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.userData = &fixtureData;
     shapeDef.enableContactEvents = true;
     b2CreatePolygonShape(body, &shapeDef, &box);
     b2Circle foot;
-    foot.radius = 0.2f;
+    foot.radius = 0.3f;
 
-    foot.center = { 0.0f, 0.86f };
+    foot.center = { 0.0f, 0.80f };
 
     b2ShapeDef sensorDef = b2DefaultShapeDef();
     sensorDef.isSensor = true;
@@ -120,24 +120,26 @@ void Mario::OnBeginContact(b2ShapeId self, b2ShapeId other) {
 
 
     if (data->type == FixtureDataType::Object && data->object->tag == "enemy") {
+
         Enemy* enemy = dynamic_cast<Enemy*>(data->object);
-        if (!enemy) return;
+        if (!enemy || enemy->IsDead()) return;
 
-        if (self.index1 == footSensorId.index1) {
+        bool isFootSensor = B2_ID_EQUALS(self, footSensorId);
+
+        b2Vec2 marioPos = b2Body_GetPosition(body);
+        b2Vec2 enemyPos = b2Body_GetPosition(enemy->GetBody());
+
+
+        if (isFootSensor || (marioPos.y < enemyPos.y - 0.5f)) {
             enemy->Die();
-            std::cout << "Mario jumped on enemy! Enemy died." << std::endl;
 
-            // Odbij Maria gore
-            b2Vec2 velocity = b2Body_GetLinearVelocity(body);
-            velocity.y = -jumpVelocity * 0.8f; 
-            b2Body_SetLinearVelocity(body, velocity);
+            b2Vec2 vel = b2Body_GetLinearVelocity(body);
+            vel.y = -jumpVelocity * 0.8f;
+            b2Body_SetLinearVelocity(body, vel);
 
-   
-            b2Filter filter = { 0 };
-            b2Shape_SetFilter(other, filter);
-        }
-        else if (!enemy->IsDead()) {
-     
+            std::cout << "SUCCESS: Stomped from above!" << std::endl;
+            return;
+        }else if (!enemy->IsDead()) {
             std::cout << "Mario hit enemy from side! Mario died." << std::endl;
             isDead = true;
 

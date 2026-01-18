@@ -126,7 +126,7 @@ void Render(Renderer& renderer) {
     }
     map.Draw(renderer);
     mario.Draw(renderer);
-   // Physics::DebugDraw(renderer);
+    Physics::DebugDraw(renderer);
 }
 
 void RenderUI(Renderer& renderer) {

@@ -6,7 +6,7 @@
 class Enemy : public Object {
 public:
     Enemy(const sf::Vector2f& pos);
-
+    virtual ~Enemy();
     virtual void Begin() override;
     virtual void Update(float deltaTime) override;
     virtual void Render(Renderer& renderer) override;
