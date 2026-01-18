@@ -32,10 +32,12 @@ cd vcpkg
 - Zaslužan za upravljanje gravitacijom, detekciju sudara između igrača i objekata, kretanje te za kreiranje statičkih i dinamičkih tijela
 
 **C++ STL**
--<filesystem>- za traženje mape resources/ i automatsko učitavanje datoteka
--<vector>: Za spremanje popisa objekata 
--<iostream>: Za ispisivanje debug informacija u konzolu 
--<string>: Za upravljanje tekstom i putanjama
+
+-<filesystem> za traženje mape resources/ i automatsko učitavanje datoteka
+
+-<vector> Za spremanje popisa objekata 
+-<iostream> Za ispisivanje debug informacija u konzolu 
+-<string> Za upravljanje tekstom i putanjama
 
 **Mapa `resources/`**
 - Smješteni su .png datoteke za animacije likova, neprijatelja i novčića, mape, backgrounda , .ttf za font i .wav, .ogg datoteke za zvukove
