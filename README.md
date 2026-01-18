@@ -33,11 +33,11 @@ cd vcpkg
 
 **C++ STL**
 
--<filesystem> za traženje mape resources/ i automatsko učitavanje datoteka
+-`<filesystem>` za traženje mape resources/ i automatsko učitavanje datoteka
 
--<vector> Za spremanje popisa objekata 
--<iostream> Za ispisivanje debug informacija u konzolu 
--<string> Za upravljanje tekstom i putanjama
+-`<vector>` Za spremanje popisa objekata 
+-`<iostream>` Za ispisivanje debug informacija u konzolu 
+-`<string>` Za upravljanje tekstom i putanjama
 
 **Mapa `resources/`**
 - Smješteni su .png datoteke za animacije likova, neprijatelja i novčića, mape, backgrounda , .ttf za font i .wav, .ogg datoteke za zvukove
