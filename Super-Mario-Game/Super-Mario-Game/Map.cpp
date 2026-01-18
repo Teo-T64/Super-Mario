@@ -3,10 +3,12 @@
 #include "Physics.h"
 #include"Coin.h"
 #include "Enemy.h"
+#include "Game.h"
 #include <box2d/box2d.h>
 #include<iostream>
-Map::Map(float cellSize) : cellSize(cellSize),grid() {}
 
+
+Map::Map(float cellSize) : cellSize(cellSize),grid() {}
 
 /*void Map::createCheckerBoard(size_t width, size_t height) {
 
@@ -72,6 +74,7 @@ sf::Vector2f Map::CreateFromImg(const sf::Image& img, std::vector<Object*>& obje
 
                 sf::Vector2f pos(cellSize * x + cellSize / 2.0f, cellSize * y + cellSize / 2.0f);
                 Coin* coin = new Coin(pos); 
+                coinsInLvl++;
                 objects.push_back(coin);
 
             }

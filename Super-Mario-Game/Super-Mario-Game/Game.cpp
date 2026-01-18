@@ -9,11 +9,12 @@
 
 Map map(1.0f);
 Camera camera(20.0f);
-Mario mario ;
+Mario mario;
 std::vector<Object*> objects{};
 sf::Music music{};
 size_t coinsInLvl{};
 bool paused{};
+float winTimer = -1.0f;
 
 sf::Font font{};
 sf::Text coinsTxt(font, "Score", 24);
@@ -28,7 +29,7 @@ void Restart() {
 
     Physics::Cleanup();
     Physics::Init(); 
-
+    winTimer = -1.0f;
     mario = Mario(); 
     mario.isDead = false;
     paused = false;
@@ -74,6 +75,7 @@ void Restart() {
             }
         }
     }
+    coinsInLvl = 0;
     sf::Image image;
     if (image.loadFromFile((resourcePath / "map.png").string())) {
         mario.position = map.CreateFromImg(image, objects);
@@ -159,6 +161,20 @@ void Begin(const sf::Window& window) {
 
 void update(float dTime) {
     std::vector<Object*> toDeleteThisFrame;
+
+    bool hasAllCoins = (mario.GetCoins() >= coinsInLvl && coinsInLvl > 0);
+
+    if (hasAllCoins && winTimer < 0) {
+        winTimer = 1.25f; 
+    }
+
+    if (winTimer > 0) {
+        winTimer -= dTime;
+        if (winTimer <= 0) {
+            paused = true; 
+            winTimer = 0;  
+        }
+    }
 
     if (mario.isDead) {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {

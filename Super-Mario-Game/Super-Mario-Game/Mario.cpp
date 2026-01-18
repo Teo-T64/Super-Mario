@@ -38,9 +38,10 @@ void Mario::Begin()
     b2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.userData = &fixtureData;
     shapeDef.enableContactEvents = true;
+    shapeDef.material.friction = 0.0f;
     b2CreatePolygonShape(body, &shapeDef, &box);
     b2Circle foot;
-    foot.radius = 0.3f;
+    foot.radius = 0.35f;
 
     foot.center = { 0.0f, 0.80f };
 
@@ -62,13 +63,15 @@ void Mario::Update(float dTime) {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift))
         move *= 2.0f;
 
+    float targetVelocityX = 0.0f;
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-        velocity.x = move;
+        targetVelocityX = move;
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-        velocity.x = -move;
+        targetVelocityX = -move;
 ;
 
-    
+    velocity.x = targetVelocityX;
     static bool jumpPressedLastFrame = false;
     bool jumpPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) ||
         sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
