@@ -2,7 +2,8 @@
 #pragma once
 #include "Renderer.h"
 #include "box2d/box2d.h"
-
+#include <string.h>
+#include <iostream>
 class Object
 {
 public:
@@ -13,4 +14,8 @@ public:
 	virtual void Begin() {}
 	virtual void Update(float deltaTime) {}
 	virtual void Render(Renderer& renderer) {}
+	sf::Vector2f position{};
+	float angle = 0.0f;
+
+
 };

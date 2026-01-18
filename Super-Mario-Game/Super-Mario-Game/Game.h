@@ -5,6 +5,7 @@
 #include "Camera.h"
 
 extern Camera camera;
+extern bool paused;
 extern std::vector<Object*> objects;
 
 void Begin(const sf::Window& window);

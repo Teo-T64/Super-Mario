@@ -2,7 +2,9 @@
 #include "Resources.h"
 #include "Physics.h"
 #include"Coin.h"
+#include "Enemy.h"
 #include <box2d/box2d.h>
+#include<iostream>
 Map::Map(float cellSize) : cellSize(cellSize),grid() {}
 
 
@@ -71,6 +73,16 @@ sf::Vector2f Map::CreateFromImg(const sf::Image& img, std::vector<Object*>& obje
                 Coin* coin = new Coin(pos); 
                 objects.push_back(coin);
 
+            }
+            else if (color == sf::Color::Blue) {
+                sf::Vector2f enemyPos(cellSize * x + cellSize / 2.0f,
+                    cellSize * y + cellSize / 2.0f);
+
+                Enemy* enemy = new Enemy(enemyPos);
+                enemy->position = enemyPos;  // POSTAVI POZICIJU
+                objects.push_back(enemy);
+
+                std::cout << "Created enemy at: (" << enemyPos.x << ", " << enemyPos.y << ")" << std::endl;
             }
         }
     }

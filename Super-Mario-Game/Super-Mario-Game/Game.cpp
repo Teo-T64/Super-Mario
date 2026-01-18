@@ -12,9 +12,11 @@ Camera camera(20.0f);
 Mario mario ;
 std::vector<Object*> objects{};
 sf::Music music{};
+bool paused{};
 
 sf::Font font{};
 sf::Text coinsTxt(font, "Score", 24);
+sf::RectangleShape backgroundShape(sf::Vector2f(1.0f, 1.0f));
 void Begin(const sf::Window& window) {
 
     std::filesystem::path resourcePath = "resources/";
@@ -72,6 +74,10 @@ void Begin(const sf::Window& window) {
     coinsTxt.setOutlineThickness(1.0f);
     coinsTxt.setScale(sf::Vector2f(0.1f,0.1f));
 
+    backgroundShape.setFillColor(sf::Color(0, 0, 0, 150));
+    backgroundShape.setOrigin(sf::Vector2f(0.5f, 0.5f));
+
+
     Physics::Init();
 
     sf::Image image;
@@ -90,6 +96,8 @@ void Begin(const sf::Window& window) {
 
 void update(float dTime) {
     std::vector<Object*> toDeleteThisFrame;
+    if (paused)
+        return;
 
     for (int i = 0; i < objects.size(); i++) {
         if (objects[i]->toDestroy) {
@@ -118,11 +126,16 @@ void Render(Renderer& renderer) {
     }
     map.Draw(renderer);
     mario.Draw(renderer);
-    Physics::DebugDraw(renderer);
+   // Physics::DebugDraw(renderer);
 }
 
 void RenderUI(Renderer& renderer) {
     coinsTxt.setPosition(-camera.GetViewSize() / 2.0f + sf::Vector2f(2.0f, 1.0f));
     coinsTxt.setString("Score: "+ std::to_string(mario.GetCoins()));
     renderer.target.draw(coinsTxt);
+    if (paused)
+    {
+        backgroundShape.setScale(camera.GetViewSize());
+        renderer.target.draw(backgroundShape);
+    }
 }

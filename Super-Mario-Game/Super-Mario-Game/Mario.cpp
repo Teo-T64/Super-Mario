@@ -1,10 +1,10 @@
-#include "Mario.h"
+﻿#include "Mario.h"
 #include "object.h"
 #include "Resources.h"
 #include "Game.h"
 #include <iostream>
 #include <box2d/box2d.h>
-
+#include "Enemy.h"
 constexpr float M_PI =22.0f/7.0f;
 const float movementSpeed = 5.0f;
 const float jumpVelocity = 8.0f;
@@ -101,19 +101,16 @@ void Mario::Draw(Renderer& renderer) {
         angle
     );
 }
-
 void Mario::OnBeginContact(b2ShapeId self, b2ShapeId other) {
     void* userPtr = b2Shape_GetUserData(other);
     if (!userPtr) return;
 
     FixtureData* data = static_cast<FixtureData*>(userPtr);
 
+
     if (data->type == FixtureDataType::Object) {
         if (data->object->tag == "coin" && !data->object->toDestroy) {
-
             data->object->toDestroy = true;
-
-
             b2Filter filter = { 0 };
             b2Shape_SetFilter(other, filter);
             this->coins++;
@@ -121,10 +118,45 @@ void Mario::OnBeginContact(b2ShapeId self, b2ShapeId other) {
         }
     }
 
+
+    if (data->type == FixtureDataType::Object && data->object->tag == "enemy") {
+        Enemy* enemy = dynamic_cast<Enemy*>(data->object);
+        if (!enemy) return;
+
+        if (self.index1 == footSensorId.index1) {
+            enemy->Die();
+            std::cout << "Mario jumped on enemy! Enemy died." << std::endl;
+
+            // Odbij Maria gore
+            b2Vec2 velocity = b2Body_GetLinearVelocity(body);
+            velocity.y = -jumpVelocity * 0.8f; 
+            b2Body_SetLinearVelocity(body, velocity);
+
+   
+            b2Filter filter = { 0 };
+            b2Shape_SetFilter(other, filter);
+        }
+        else if (!enemy->IsDead()) {
+     
+            std::cout << "Mario hit enemy from side! Mario died." << std::endl;
+            isDead = true;
+
+            b2Vec2 velocity = b2Body_GetLinearVelocity(body);
+            b2Vec2 enemyPos = b2Body_GetPosition(enemy->GetBody());
+            b2Vec2 marioPos = b2Body_GetPosition(body);
+
+            float direction = (marioPos.x < enemyPos.x) ? -1.0f : 1.0f;
+            velocity.x = direction * 4.0f;
+            velocity.y = -3.0f;
+            b2Body_SetLinearVelocity(body, velocity);
+        }
+    }
+
     if (data->type == FixtureDataType::MapTile) {
         groundContact++;
     }
 }
+
 void Mario::OnEndContact(b2ShapeId self, b2ShapeId other) {
     FixtureData* data = static_cast<FixtureData*>(b2Shape_GetUserData(other));
 

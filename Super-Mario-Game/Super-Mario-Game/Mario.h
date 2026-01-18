@@ -6,7 +6,7 @@
 #include "Physics.h"
 #include "Animation.h"
 #include <SFML/Audio.hpp>
-
+#include "object.h"
 class Mario
 	:public ContactListener
 {
@@ -20,6 +20,7 @@ private:
 	size_t groundContact = 0;
 	bool facingLeft = false;
 	size_t coins{};
+
 public:
 	
 	void Begin();
@@ -29,9 +30,16 @@ public:
 	void OnEndContact(b2ShapeId self, b2ShapeId other) override;
 	bool IsGrounded()const { return groundContact > 0; }
 	size_t GetCoins() const { return coins; };
+	
+	
+	
+	
+	
+	
 	sf::Vector2f position{};
 	float angle{};
 	
+	bool isDead{};
 
 };
 

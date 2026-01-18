@@ -18,10 +18,15 @@ int main() {
 		while (const std::optional event = window.pollEvent()) {
 			if (event->is<sf::Event::Closed>()) {
 				window.close();
-			
-			}
 
+			}
+			if (auto keyEvent = event->getIf<sf::Event::KeyPressed>()) {
+				if (keyEvent->code == sf::Keyboard::Key::Escape) {
+					paused = !paused;
+				}
+			}
 		}
+
 		update(deltaTime);
 
 		window.clear();
@@ -34,7 +39,7 @@ int main() {
 
 		window.display();
 	}
-
-
 }
+
+
 
